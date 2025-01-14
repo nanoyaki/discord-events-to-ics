@@ -26,5 +26,8 @@
           ];
         }
       );
+
+      packages.x86_64-linux.default = pkgs.callPackage ./nix/package.nix { };
+      apps.x86_64-linux.default = pkgs.callPackage ./nix/package.nix { };
     };
 }

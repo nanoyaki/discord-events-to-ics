@@ -1,6 +1,7 @@
 {
   "name": "nanoyaki/discord-events-to-ics",
   "type": "project",
+  "description": "A PHP Tool to turn Discord events into an iCalendar file for Calendar integration",
   "require": {
     "php": ">=8.4",
     "ext-mongodb": "^1.20",
