@@ -2,8 +2,8 @@
 
 namespace Nanoyaki\DiscordEventsToIcs;
 
+use Nanoyaki\DiscordEventsToIcs\Entities\Calendar;
 use Nanoyaki\DiscordEventsToIcs\Services\CachedDiscord;
-use Nanoyaki\DiscordEventsToIcs\Services\Calendar;
 use Nanoyaki\DiscordEventsToIcs\Services\Discord;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +25,9 @@ class App
         $this->discord = new Discord($_ENV["BOT_TOKEN"]);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function getCalendar(): Response
     {
         $discordEvents = $this->discord->getScheduledEventsByGuild($_ENV["GUILD_ID"], true);

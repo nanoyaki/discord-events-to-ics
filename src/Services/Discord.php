@@ -2,8 +2,6 @@
 
 namespace Nanoyaki\DiscordEventsToIcs\Services;
 
-use DateTime;
-use DateTimeInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -29,6 +27,12 @@ class Discord
         );
     }
 
+    /**
+     * @param string $guildId
+     * @param bool $withUserCount
+     * @return array<mixed>
+     * @throws \Throwable a bunch of symfony errors
+     */
     public function getScheduledEventsByGuild(string $guildId, bool $withUserCount = false): array
     {
         $response = $this->client->request(

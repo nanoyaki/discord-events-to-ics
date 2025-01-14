@@ -32,6 +32,12 @@ class CachedDiscord extends Discord
             ->selectCollection("cache");
     }
 
+    /**
+     * @param string $guildId
+     * @param bool $withUserCount
+     * @return array<mixed>
+     * @throws \Throwable
+     */
     public function getScheduledEventsByGuild(string $guildId, bool $withUserCount = false): array
     {
         $cached = $this->getCached(__METHOD__);
@@ -50,6 +56,7 @@ class CachedDiscord extends Discord
     private function getCached(string $method): mixed
     {
         $cachedValue = $this->collection->findOne(["method" => $method]);
+        assert(is_null($cachedValue) || is_array($cachedValue));
 
         if (
             $cachedValue === null
