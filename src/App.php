@@ -34,7 +34,7 @@ class App
         $calendar = new Calendar($discordEvents);
 
         return new Response($calendar->toString(), Response::HTTP_OK, [
-            'Content-type' => 'text/calendar',
+            'Content-Type' => 'text/calendar',
             'Content-Disposition' => 'attachment; filename="oh events.ics"'
         ]);
     }
