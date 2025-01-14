@@ -11,12 +11,20 @@
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
     in
     {
-      devShells.x86_64-linux.default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          php84
-          php84Packages.composer
-          symfony-cli
-        ];
-      };
+      devShells.x86_64-linux.default = pkgs.mkShell (
+        let
+          php = (
+            pkgs.php84.buildEnv {
+              extensions = ({ enabled, all }: enabled ++ (with all; [ mongodb ]));
+            }
+          );
+        in
+        {
+          buildInputs = [
+            php
+            php.packages.composer
+          ];
+        }
+      );
     };
 }

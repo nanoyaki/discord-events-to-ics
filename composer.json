@@ -1,26 +1,28 @@
 {
-    "name": "nanoyaki/discord-events-to-ics",
-    "type": "project",
-    "require": {
-        "php": ">=8.4",
-        "spatie/icalendar-generator": "^2.9",
-        "symfony/http-client": "^7.2.2",
-        "symfony/dotenv": "^7.2",
-        "symfony/http-foundation": "^7.2"
-    },
-    "require-dev": {
-        "phpstan/phpstan": "^2.1"
-    },
-    "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Nanoyaki\\DiscordEventsToIcs\\": "src/"
-        }
-    },
-    "authors": [
-        {
-            "name": "nanoyaki",
-            "email": "hanakretzer@gmail.com"
-        }
-    ]
+  "name": "nanoyaki/discord-events-to-ics",
+  "type": "project",
+  "require": {
+    "php": ">=8.4",
+    "ext-mongodb": "^1.20",
+    "mongodb/mongodb": "^1.20",
+    "spatie/icalendar-generator": "^2.9",
+    "symfony/http-client": "^7.2.2",
+    "symfony/dotenv": "^7.2",
+    "symfony/http-foundation": "^7.2"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Nanoyaki\\DiscordEventsToIcs\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "nanoyaki",
+      "email": "hanakretzer@gmail.com"
+    }
+  ]
 }
