@@ -14,8 +14,9 @@ class App
 
     public function __construct()
     {
-        $dotenv = new Dotenv();
-        $dotenv->load(__DIR__ . '/../.env');
+        if (file_exists(__DIR__ . '/../.env')) {
+            new Dotenv()->load(__DIR__ . '/../.env');
+        }
 
         if (array_key_exists('MONGODB_URI', $_ENV)) {
             $this->discord = new CachedDiscord($_ENV["BOT_TOKEN"], $_ENV["MONGODB_URI"]);
