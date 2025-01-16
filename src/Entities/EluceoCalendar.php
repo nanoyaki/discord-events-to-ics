@@ -7,6 +7,7 @@ use Eluceo\iCal\Domain\Entity\Calendar;
 use Eluceo\iCal\Domain\Entity\Event;
 use Eluceo\iCal\Domain\Entity\TimeZone;
 use Eluceo\iCal\Domain\ValueObject\DateTime;
+use Eluceo\iCal\Domain\ValueObject\EmailAddress;
 use Eluceo\iCal\Domain\ValueObject\Location;
 use Eluceo\iCal\Domain\ValueObject\Organizer;
 use Eluceo\iCal\Domain\ValueObject\TimeSpan;
@@ -60,7 +61,10 @@ class EluceoCalendar implements DiscordCalendarInterface
 
         $title = $event["name"] ?? "Probably some movie Event";
         $url = new Uri(Discord::DISCORD_EVENT_BASE_URI . "{$event["guild_id"]}/{$event["id"]}");
-        $organizer = new Organizer(($event["creator"]["global_name"] ?? $event["creator"]["username"]) ?? "Unknown");
+        $organizer = new Organizer(
+            new EmailAddress("not-a@real-email.com"),
+            ($event["creator"]["global_name"] ?? $event["creator"]["username"]) ?? "Unknown"
+        );
 
         $startTime = PhpDateTimeImmutable::createFromFormat(
             \DateTimeInterface::ATOM,
