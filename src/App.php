@@ -18,12 +18,12 @@ class App
             new Dotenv()->load(__DIR__ . '/../.env');
         }
 
-        if (array_key_exists('MONGODB_URI', $_ENV)) {
-            $this->discord = new CachedDiscord($_ENV["BOT_TOKEN"], $_ENV["MONGODB_URI"]);
+        if (array_key_exists('MONGODB_URI', $_SERVER)) {
+            $this->discord = new CachedDiscord($_SERVER["BOT_TOKEN"], $_SERVER["MONGODB_URI"]);
             return;
         }
 
-        $this->discord = new Discord($_ENV["BOT_TOKEN"]);
+        $this->discord = new Discord($_SERVER["BOT_TOKEN"]);
     }
 
     /**
@@ -31,7 +31,7 @@ class App
      */
     public function getCalendar(): Response
     {
-        $discordEvents = $this->discord->getScheduledEventsByGuild($_ENV["GUILD_ID"], true);
+        $discordEvents = $this->discord->getScheduledEventsByGuild($_SERVER["GUILD_ID"], true);
         $calendar = new Calendar($discordEvents);
 
         return new Response($calendar->toString(), Response::HTTP_OK, [
