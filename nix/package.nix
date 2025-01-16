@@ -1,19 +1,23 @@
 {
-    lib,
-    php84,
+  lib,
+  php84,
 }:
 
 php84.buildComposerProject {
-    src = lib.cleanSource ./..;
+  src = lib.cleanSource ./..;
 
-    pname = "discord-events-to-ics";
-    version = "0.1.0";
+  pname = "discord-events-to-ics";
+  version = "0.1.2";
 
-    php = php84.buildEnv {
-        extensions = ({ enabled, all }: enabled ++ (with all; [
-            mongodb
-        ]));
-    };
+  php = php84.buildEnv {
+    extensions = (
+      { enabled, all }:
+      enabled
+      ++ (with all; [
+        mongodb
+      ])
+    );
+  };
 
-    vendorHash = "sha256-wnm0sZpR8WZort1ir/H1LrC82r6piMbW0J+Uk4NQoRM=";
+  vendorHash = "sha256-wnm0sZpR8WZort1ir/H1LrC82r6piMbW0J+Uk4NQoRM=";
 }

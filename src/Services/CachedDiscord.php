@@ -28,7 +28,7 @@ class CachedDiscord extends Discord
         );
 
         $this->collection = $this->mongoClient
-            ->selectDatabase("database")
+            ->selectDatabase("discord")
             ->selectCollection("cache");
     }
 
