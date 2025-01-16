@@ -7,7 +7,7 @@ php84.buildComposerProject {
   src = lib.cleanSource ./..;
 
   pname = "discord-events-to-ics";
-  version = "0.1.2";
+  version = "0.1.3";
 
   php = php84.buildEnv {
     extensions = (
