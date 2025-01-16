@@ -21,7 +21,8 @@ readonly class Calendar
      */
     public function __construct(array $events)
     {
-        $this->calendar = ICalendar::create("oh events");
+        $this->calendar = ICalendar::create("oh events")
+            ->withoutTimezone();
 
         foreach ($events as $event) {
             $this->calendar->event($this->eventToCalendarEvent($event));
