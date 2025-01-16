@@ -2,7 +2,8 @@
 
 namespace Nanoyaki\DiscordEventsToIcs;
 
-use Nanoyaki\DiscordEventsToIcs\Entities\Calendar;
+use Nanoyaki\DiscordEventsToIcs\Entities\SpatieCalendar;
+use Nanoyaki\DiscordEventsToIcs\Entities\EluceoCalendar;
 use Nanoyaki\DiscordEventsToIcs\Services\CachedDiscord;
 use Nanoyaki\DiscordEventsToIcs\Services\Discord;
 use Symfony\Component\Dotenv\Dotenv;
@@ -32,9 +33,16 @@ class App
     public function getCalendar(): Response
     {
         $discordEvents = $this->discord->getScheduledEventsByGuild($_SERVER["GUILD_ID"], true);
-        $calendar = new Calendar($discordEvents);
 
-        return new Response($calendar->toString(), Response::HTTP_OK, [
+        $calendar =
+            array_all(
+                $discordEvents,
+                fn($event) => !array_key_exists("recurrence_rule", $event) || is_null($event["recurrence_rule"])
+            )
+                ? new EluceoCalendar($discordEvents)
+                : new SpatieCalendar($discordEvents);
+
+        return new Response($calendar->result(), Response::HTTP_OK, [
             'Content-Type' => 'text/calendar; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="oh events.ics"'
         ]);
