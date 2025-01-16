@@ -8,7 +8,6 @@ use Nanoyaki\DiscordEventsToIcs\Enums\RecurrenceFrequency;
 use Nanoyaki\DiscordEventsToIcs\Services\Discord;
 use Spatie\IcalendarGenerator\Components\Calendar as ICalendar;
 use Spatie\IcalendarGenerator\Components\Event;
-use Spatie\IcalendarGenerator\Components\Timezone;
 use Spatie\IcalendarGenerator\Enums\RecurrenceMonth;
 use Spatie\IcalendarGenerator\ValueObjects\RRule;
 
@@ -22,8 +21,7 @@ readonly class Calendar
      */
     public function __construct(array $events)
     {
-        $this->calendar = ICalendar::create("oh events")
-            ->timezone(Timezone::create("Europe/Berlin"));
+        $this->calendar = ICalendar::create("oh events");
 
         foreach ($events as $event) {
             $this->calendar->event($this->eventToCalendarEvent($event));
