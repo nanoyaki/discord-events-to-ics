@@ -76,7 +76,7 @@ readonly class Calendar
 
         $calendarEvent->description($description);
 
-        if (!array_key_exists("recurrence_rule", $event)) {
+        if (!array_key_exists("recurrence_rule", $event) || is_null($event["recurrence_rule"])) {
             return $calendarEvent;
         }
 
