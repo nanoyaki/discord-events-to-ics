@@ -65,7 +65,7 @@ readonly class SpatieCalendar implements DiscordCalendarInterface
         }
 
         $description = ($event["description"] ?? "No description")
-            . "Interested members: {$event["user_count"]}\n\n"
+            . "\nInterested members: {$event["user_count"]}\n\n"
             . "Keep in mind that your client might have limitations "
             . "so Events might not be up to date at all times";
 
