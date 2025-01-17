@@ -11,7 +11,7 @@
     "symfony/http-foundation": "^7.2",
     "eluceo/ical": "^2.14",
     "spatie/icalendar-generator": "^2.9",
-    "cweagans/composer-patches": "^2.0.0-beta2"
+    "cweagans/composer-patches": "^1.7"
   },
   "require-dev": {
     "phpstan/phpstan": "^2.1"
@@ -19,18 +19,10 @@
   "extra": {
     "patches": {
       "eluceo/ical": [
-        {
-          "description": "UTC offset fix",
-          "url": "patches/eluceo-timezone.patch",
-          "sha256": "50bbdd94e1f10fd06f81424128fff034cb01ae0ac9405c7ec3749921e1afc412"
-        }
+        "patches/eluceo-timezone.patch"
       ],
       "spatie/icalendar-generator": [
-        {
-          "description": "UTC offset fix",
-          "url": "patches/spatie-timezone.patch",
-          "sha256": "6e8783447c9798f647ee6948c27568d92d5f942acf49af52e7f1eeb6065b431a"
-        }
+        "patches/spatie-timezone.patch"
       ]
     }
   },

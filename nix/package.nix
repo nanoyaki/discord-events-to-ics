@@ -3,21 +3,21 @@
   php84,
 }:
 
-php84.buildComposerProject {
-  src = lib.cleanSource ./..;
-
+php84.buildComposerProject2 {
   pname = "discord-events-to-ics";
-  version = "0.2.2";
+  version = "0.3.0";
 
-  php = php84.buildEnv {
-    extensions = (
-      { enabled, all }:
-      enabled
-      ++ (with all; [
-        mongodb
-      ])
-    );
-  };
+  src = ./..;
 
-  vendorHash = "sha256-frCelE1OWWiSBugENjRHOkMgS8NCRFte0CufyR5fi0A=";
+  php = php84.withExtensions (
+    { all, enabled }:
+    enabled
+    ++ (with all; [
+      mongodb
+    ])
+  );
+
+  composerNoPlugins = false;
+  composerLock = ../composer.lock;
+  vendorHash = "sha256-2aCYVuHtdZHrgoOM/LWNwP2fF+gXyudiBSlY1TlQ15I=";
 }
