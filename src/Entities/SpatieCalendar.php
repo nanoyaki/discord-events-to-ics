@@ -24,7 +24,7 @@ readonly class SpatieCalendar implements DiscordCalendarInterface
     public function __construct(array $discordEvents)
     {
         $this->calendar = ICalendar::create("oh events")
-            ->timezone(Timezone::create('UTC'));
+            ->timezone(Timezone::create('Europe/Rome'));
 
         $this->calendar->event(
             array_map(

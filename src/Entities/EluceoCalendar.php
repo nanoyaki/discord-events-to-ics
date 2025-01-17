@@ -41,7 +41,7 @@ class EluceoCalendar implements DiscordCalendarInterface
             fn($event) => $this->discordEventToIcalEvent($event),
             $discordEvents
         );
-        $timezone = TimeZone::createFromPhpDateTimeZone(new \DateTimeZone("UTC"));
+        $timezone = TimeZone::createFromPhpDateTimeZone(new \DateTimeZone("Europe/Rome"));
 
         $this->calendar = new Calendar($icalEvents)
             ->addTimeZone($timezone);
