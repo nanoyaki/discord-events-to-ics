@@ -3,6 +3,7 @@
 namespace Nanoyaki\DiscordEventsToIcs\Entities;
 
 use DateTimeImmutable;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\CalendarInterface;
 use Nanoyaki\DiscordEventsToIcs\Enums\Discord\EntityType;
 use Nanoyaki\DiscordEventsToIcs\Enums\RecurrenceDay;
 use Nanoyaki\DiscordEventsToIcs\Enums\RecurrenceFrequency;
@@ -13,7 +14,7 @@ use Spatie\IcalendarGenerator\Components\Timezone;
 use Spatie\IcalendarGenerator\Enums\RecurrenceMonth;
 use Spatie\IcalendarGenerator\ValueObjects\RRule;
 
-readonly class SpatieCalendar implements DiscordCalendarInterface
+readonly class SpatieCalendar implements CalendarInterface
 {
     private ICalendar $calendar;
 
@@ -64,8 +65,12 @@ readonly class SpatieCalendar implements DiscordCalendarInterface
             assert($endTime instanceof DateTimeImmutable);
         }
 
-        $description = ($event["description"] ?? "No description")
-            . "Interested members: {$event["user_count"]}\n\n"
+        $discordDescription = array_key_exists("description", $event) && !is_null($event["description"])
+            ? $event["description"] . "\n"
+            : "";
+
+        $description = $discordDescription
+            . "\nInterested members: {$event["user_count"]}\n\n"
             . "Keep in mind that your client might have limitations "
             . "so Events might not be up to date at all times";
 

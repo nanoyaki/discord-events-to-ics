@@ -1,8 +1,8 @@
 <?php
 
-namespace Nanoyaki\DiscordEventsToIcs\Entities;
+namespace Nanoyaki\DiscordEventsToIcs\Entities\Discord;
 
-interface DiscordCalendarInterface
+interface CalendarInterface
 {
     /**
      * @param array<mixed> $discordEvents

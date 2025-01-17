@@ -15,10 +15,11 @@ use Eluceo\iCal\Domain\ValueObject\Timestamp;
 use Eluceo\iCal\Domain\ValueObject\Uri;
 use Eluceo\iCal\Presentation\Component;
 use Eluceo\iCal\Presentation\Factory\CalendarFactory;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\CalendarInterface;
 use Nanoyaki\DiscordEventsToIcs\Enums\Discord\EntityType;
 use Nanoyaki\DiscordEventsToIcs\Services\Discord;
 
-class EluceoCalendar implements DiscordCalendarInterface
+class EluceoCalendar implements CalendarInterface
 {
     private Calendar $calendar;
 
@@ -117,7 +118,11 @@ class EluceoCalendar implements DiscordCalendarInterface
             }
         );
 
-        $description = ($event["description"] ?? "No description")
+        $discordDescription = array_key_exists("description", $event) && !is_null($event["description"])
+            ? $event["description"] . "\n"
+            : "";
+
+        $description = $discordDescription
             . "Interested members: {$event["user_count"]}\n\n"
             . "Keep in mind that your client might have limitations "
             . "so Events might not be up to date at all times";
