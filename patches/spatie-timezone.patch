@@ -1,0 +1,12 @@
+diff --git a/src/Properties/DateTimeProperty.php b/src/Properties/DateTimeProperty.php
+index 6740eb2..8a0b3a4 100644
+--- a/src/Properties/DateTimeProperty.php
++++ b/src/Properties/DateTimeProperty.php
+@@ -64,6 +64,6 @@ class DateTimeProperty extends Property
+ 
+     private function isUTC(): bool
+     {
+-        return $this->dateTimeZone->getName() === 'UTC';
++        return $this->dateTimeZone->getName() === 'UTC' || $this->dateTimeZone->getName() === "+00:00";
+     }
+ }

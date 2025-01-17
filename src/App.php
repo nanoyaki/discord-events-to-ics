@@ -9,9 +9,9 @@ use Nanoyaki\DiscordEventsToIcs\Services\Discord;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Response;
 
-class App
+readonly class App
 {
-    private readonly Discord $discord;
+    private Discord $discord;
 
     public function __construct()
     {

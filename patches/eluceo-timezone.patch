@@ -1,0 +1,31 @@
+diff --git a/src/Presentation/Component/Property/Value/DateTimeValue.php b/src/Presentation/Component/Property/Value/DateTimeValue.php
+index 039d632..8bcb863 100644
+--- a/src/Presentation/Component/Property/Value/DateTimeValue.php
++++ b/src/Presentation/Component/Property/Value/DateTimeValue.php
+@@ -41,7 +41,13 @@ final class DateTimeValue extends Value
+ 
+     private function convertDateTimeToString(DateTime $dateTime): string
+     {
+-        if ($dateTime->hasDateTimeZone() && $dateTime->getDateTimeZone()->getName() === 'UTC') {
++        if (
++            $dateTime->hasDateTimeZone()
++            && (
++                $dateTime->getDateTimeZone()->getName() === 'UTC'
++                || $dateTime->getDateTimeZone()->getName() === '+00:00'
++            )
++        ) {
+             return $dateTime->getDateTime()->format(self::FORMAT_UTC);
+         }
+ 
+diff --git a/src/Presentation/Factory/DateTimeFactory.php b/src/Presentation/Factory/DateTimeFactory.php
+index 662baaa..47df67f 100644
+--- a/src/Presentation/Factory/DateTimeFactory.php
++++ b/src/Presentation/Factory/DateTimeFactory.php
+@@ -41,6 +41,7 @@ class DateTimeFactory
+             $pointInTime instanceof DateTime
+             && $pointInTime->hasDateTimeZone()
+             && $pointInTime->getDateTimeZone()->getName() !== 'UTC'
++            && $pointInTime->getDateTimeZone()->getName() !== '+00:00'
+         ) {
+             return [
+                 new Property\Parameter('TZID', new TextValue($pointInTime->getDateTimeZone()->getName())),

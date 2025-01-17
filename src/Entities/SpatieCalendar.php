@@ -24,7 +24,7 @@ readonly class SpatieCalendar implements DiscordCalendarInterface
     public function __construct(array $discordEvents)
     {
         $this->calendar = ICalendar::create("oh events")
-            ->timezone(Timezone::create('Europe/Rome'));
+            ->timezone(Timezone::create('UTC'));
 
         $this->calendar->event(
             array_map(
@@ -49,7 +49,8 @@ readonly class SpatieCalendar implements DiscordCalendarInterface
 
         $startsAt = DateTimeImmutable::createFromFormat(
             \DateTimeInterface::ATOM,
-            (string)$event["scheduled_start_time"]
+            (string)$event["scheduled_start_time"],
+            new \DateTimeZone("UTC")
         );
         assert($startsAt instanceof DateTimeImmutable);
 
@@ -57,7 +58,8 @@ readonly class SpatieCalendar implements DiscordCalendarInterface
         if ($entityType === EntityType::External || !is_null($event["scheduled_end_time"])) {
             $endTime = DateTimeImmutable::createFromFormat(
                 \DateTimeInterface::ATOM,
-                (string)$event["scheduled_end_time"]
+                (string)$event["scheduled_end_time"],
+                new \DateTimeZone("UTC")
             );
             assert($endTime instanceof DateTimeImmutable);
         }

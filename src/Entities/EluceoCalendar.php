@@ -41,7 +41,21 @@ class EluceoCalendar implements DiscordCalendarInterface
             fn($event) => $this->discordEventToIcalEvent($event),
             $discordEvents
         );
-        $timezone = TimeZone::createFromPhpDateTimeZone(new \DateTimeZone("Europe/Rome"));
+
+        $firstTimeSpan = $icalEvents[0]->getOccurrence();
+        assert($firstTimeSpan instanceof TimeSpan);
+        $firstDate = $firstTimeSpan->getBegin()->getDateTime();
+
+        $lastElement = count($icalEvents) - 1;
+        $lastTimeSpan = $icalEvents[$lastElement]->getOccurrence();
+        assert($lastTimeSpan instanceof TimeSpan);
+        $lastDate = $lastTimeSpan->getEnd()->getDateTime();
+
+        $timezone = TimeZone::createFromPhpDateTimeZone(
+            new \DateTimeZone("UTC"),
+            $firstDate,
+            $lastDate
+        );
 
         $this->calendar = new Calendar($icalEvents)
             ->addTimeZone($timezone);
@@ -68,7 +82,8 @@ class EluceoCalendar implements DiscordCalendarInterface
 
         $startTime = PhpDateTimeImmutable::createFromFormat(
             \DateTimeInterface::ATOM,
-            (string)$event["scheduled_start_time"]
+            (string)$event["scheduled_start_time"],
+            new \DateTimeZone("UTC")
         );
         assert($startTime instanceof PhpDateTimeImmutable);
 
@@ -82,7 +97,8 @@ class EluceoCalendar implements DiscordCalendarInterface
         if ($entityType === EntityType::External || !is_null($event["scheduled_end_time"])) {
             $endTime = PhpDateTimeImmutable::createFromFormat(
                 \DateTimeInterface::ATOM,
-                (string)$event["scheduled_end_time"]
+                (string)$event["scheduled_end_time"],
+                new \DateTimeZone("UTC")
             );
             assert($endTime instanceof PhpDateTimeImmutable);
 
@@ -106,7 +122,12 @@ class EluceoCalendar implements DiscordCalendarInterface
             . "Keep in mind that your client might have limitations "
             . "so Events might not be up to date at all times";
 
-        $touched = new Timestamp(new \DateTime("now"));
+        $touched = new Timestamp(
+            new \DateTime(
+                "now",
+                new \DateTimeZone("Europe/Berlin")
+            )
+        );
 
         return new Event()
             ->setSummary($title)

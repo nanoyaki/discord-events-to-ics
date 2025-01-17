@@ -1,0 +1,29 @@
+{
+    "_hash": "02ad9927d057a474f0e3927f39d6f04ac034224b9e818224ce3b8dccec54a33e",
+    "patches": {
+        "eluceo/ical": [
+            {
+                "package": "eluceo/ical",
+                "description": "UTC offset fix",
+                "url": "patches/eluceo-timezone.patch",
+                "sha256": "50bbdd94e1f10fd06f81424128fff034cb01ae0ac9405c7ec3749921e1afc412",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "spatie/icalendar-generator": [
+            {
+                "package": "spatie/icalendar-generator",
+                "description": "UTC offset fix",
+                "url": "patches/spatie-timezone.patch",
+                "sha256": "6e8783447c9798f647ee6948c27568d92d5f942acf49af52e7f1eeb6065b431a",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}
