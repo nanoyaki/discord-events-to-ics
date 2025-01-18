@@ -2,21 +2,16 @@
 
 namespace Nanoyaki\DiscordEventsToIcs\Entities;
 
-use DateTimeImmutable;
 use Nanoyaki\DiscordEventsToIcs\Entities\Discord\ExternalEvent;
 use Nanoyaki\DiscordEventsToIcs\Entities\Discord\GuildScheduledEvent;
 use Nanoyaki\DiscordEventsToIcs\Entities\Discord\RecurrenceRule;
 use Nanoyaki\DiscordEventsToIcs\Entities\Discord\VoiceChannelEvent;
-use Nanoyaki\DiscordEventsToIcs\Enums\Discord\EntityType;
 use Nanoyaki\DiscordEventsToIcs\Enums\Discord\RecurrenceRule\Month;
 use Nanoyaki\DiscordEventsToIcs\Enums\Discord\RecurrenceRule\Weekday;
-use Nanoyaki\DiscordEventsToIcs\Enums\RecurrenceDay;
-use Nanoyaki\DiscordEventsToIcs\Enums\RecurrenceFrequency;
 use Nanoyaki\DiscordEventsToIcs\Services\Discord\Client;
 use Spatie\IcalendarGenerator\Components\Calendar as ICalendar;
 use Spatie\IcalendarGenerator\Components\Event;
 use Spatie\IcalendarGenerator\Components\Timezone;
-use Spatie\IcalendarGenerator\Enums\RecurrenceMonth;
 use Spatie\IcalendarGenerator\ValueObjects\RRule;
 
 readonly class SpatieCalendar implements CalendarInterface
@@ -92,7 +87,10 @@ readonly class SpatieCalendar implements CalendarInterface
 
         if (!is_null($rrule->byWeekday)) {
             $recurrenceRule->weekdays = array_map(
-                fn(Weekday $weekday) => $weekday->into(),
+                fn(Weekday $weekday) => [
+                    "day" => $weekday->into(),
+                    "index" => null
+                ],
                 $rrule->byWeekday
             );
         }
