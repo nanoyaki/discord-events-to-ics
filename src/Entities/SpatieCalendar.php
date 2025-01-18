@@ -46,7 +46,7 @@ readonly class SpatieCalendar implements CalendarInterface
         $organizer = $event->creator->globalName ?? $event->creator->username;
 
         $description = (
-            !is_null($event->description)
+            !is_null($event->description) && $event->description !== ""
                 ? $event->description . "\n"
                 : ""
             )

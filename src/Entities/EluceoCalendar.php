@@ -80,7 +80,7 @@ class EluceoCalendar implements CalendarInterface
         );
 
         $description = (
-            !is_null($event->description)
+            !is_null($event->description) && $event->description !== ""
                 ? $event->description . "\n"
                 : ""
             )
