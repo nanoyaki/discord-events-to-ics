@@ -11,21 +11,13 @@
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
     in
     {
-      devShells.x86_64-linux.default = pkgs.mkShell (
-        let
-          php = (
-            pkgs.php84.buildEnv {
-              extensions = ({ enabled, all }: enabled ++ (with all; [ mongodb ]));
-            }
-          );
-        in
+      devShells.x86_64-linux.default = pkgs.mkShell
         {
-          buildInputs = [
-            php
-            php.packages.composer
+          buildInputs = with pkgs; [
+            php84
+            php84.packages.composer
           ];
-        }
-      );
+        };
 
       packages.x86_64-linux.default = pkgs.callPackage ./nix/package.nix { };
       apps.x86_64-linux.default = pkgs.callPackage ./nix/package.nix { };
