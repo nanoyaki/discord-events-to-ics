@@ -3,11 +3,16 @@
 namespace Nanoyaki\DiscordEventsToIcs\Entities;
 
 use DateTimeImmutable;
-use Nanoyaki\DiscordEventsToIcs\Entities\Discord\CalendarInterface;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\ExternalEvent;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\GuildScheduledEvent;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\RecurrenceRule;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\VoiceChannelEvent;
 use Nanoyaki\DiscordEventsToIcs\Enums\Discord\EntityType;
+use Nanoyaki\DiscordEventsToIcs\Enums\Discord\RecurrenceRule\Month;
+use Nanoyaki\DiscordEventsToIcs\Enums\Discord\RecurrenceRule\Weekday;
 use Nanoyaki\DiscordEventsToIcs\Enums\RecurrenceDay;
 use Nanoyaki\DiscordEventsToIcs\Enums\RecurrenceFrequency;
-use Nanoyaki\DiscordEventsToIcs\Services\Discord;
+use Nanoyaki\DiscordEventsToIcs\Services\Discord\Client;
 use Spatie\IcalendarGenerator\Components\Calendar as ICalendar;
 use Spatie\IcalendarGenerator\Components\Event;
 use Spatie\IcalendarGenerator\Components\Timezone;
@@ -19,7 +24,7 @@ readonly class SpatieCalendar implements CalendarInterface
     private ICalendar $calendar;
 
     /**
-     * @param array<mixed> $discordEvents
+     * @param array<GuildScheduledEvent> $discordEvents
      * @throws \Exception
      */
     public function __construct(array $discordEvents)
@@ -35,112 +40,72 @@ readonly class SpatieCalendar implements CalendarInterface
         );
     }
 
-    /**
-     * @param array<mixed> $event
-     * @return Event
-     * @throws \Exception
-     */
-    public function discordEventToIcalEvent(array $event): Event
+    public function discordEventToIcalEvent(GuildScheduledEvent $event): Event
     {
-        $entityType = EntityType::from($event['entity_type']);
+        $url = Client::DISCORD_EVENT_BASE_URI . "{$event->guildId}/{$event->id}";
+        $organizer = $event->creator->globalName ?? $event->creator->username;
 
-        $title = $event["name"] ?? "Probably some movie Event";
-        $url = Discord::DISCORD_EVENT_BASE_URI . "{$event["guild_id"]}/{$event["id"]}";
-        $organizer = ($event["creator"]["global_name"] ?? $event["creator"]["username"]) ?? "Unknown";
-
-        $startsAt = DateTimeImmutable::createFromFormat(
-            \DateTimeInterface::ATOM,
-            (string)$event["scheduled_start_time"],
-            new \DateTimeZone("UTC")
-        );
-        assert($startsAt instanceof DateTimeImmutable);
-
-        $endTime = $startsAt->setTime(23, 59, 59);
-        if ($entityType === EntityType::External || !is_null($event["scheduled_end_time"])) {
-            $endTime = DateTimeImmutable::createFromFormat(
-                \DateTimeInterface::ATOM,
-                (string)$event["scheduled_end_time"],
-                new \DateTimeZone("UTC")
-            );
-            assert($endTime instanceof DateTimeImmutable);
-        }
-
-        $discordDescription = array_key_exists("description", $event) && !is_null($event["description"])
-            ? $event["description"] . "\n"
-            : "";
-
-        $description = $discordDescription
-            . "\nInterested members: {$event["user_count"]}\n\n"
+        $description = (
+            !is_null($event->description)
+                ? $event->description . "\n"
+                : ""
+            )
+            . "{$event->interestedMembers} interested members\n\n"
             . "Keep in mind that your client might have limitations "
             . "so Events might not be up to date at all times";
 
-        $location = match ($entityType) {
-            EntityType::StageInstance, EntityType::Voice =>
-            "In voice channel: https://discord.com/channels/{$event["guild_id"]}/{$event["channel_id"]}",
-            EntityType::External =>
-            "{$event["entity_metadata"]["location"]}"
+
+        $location = match (true) {
+            $event instanceof VoiceChannelEvent =>
+            "In voice channel: https://discord.com/channels/{$event->guildId}/{$event->channelId}",
+            $event instanceof ExternalEvent =>
+            "{$event->location}",
+            default => ""
         };
 
         $calendarEvent = Event::create()
-            ->name($title)
+            ->name($event->name)
             ->url($url)
             ->organizer("", $organizer)
             ->addressName($location)
             ->description($description)
-            ->startsAt($startsAt)
-            ->endsAt($endTime);
+            ->startsAt($event->scheduledStartTime)
+            ->endsAt($event->scheduledEndTime);
 
-        if (!array_key_exists("recurrence_rule", $event) || is_null($event["recurrence_rule"])) {
-            return $calendarEvent;
+        if (!is_null($event->recurrenceRule)) {
+            $rrule = $this->parseRecurrencyRule($event->recurrenceRule);
+            $calendarEvent->rrule($rrule);
         }
-
-        $calendarEvent->rrule($this->parseRecurrencyRule($event["recurrence_rule"]));
 
         return $calendarEvent;
     }
 
-    /**
-     * @param array<mixed> $eventRrule
-     * @return RRule
-     * @throws \Exception
-     */
-    public function parseRecurrencyRule(array $eventRrule): RRule
+    public function parseRecurrencyRule(RecurrenceRule $rrule): RRule
     {
-        $frequency = RecurrenceFrequency::from($eventRrule["frequency"])->into();
-        $interval = (int)$eventRrule["interval"];
+        $recurrenceRule = RRule::frequency($rrule->frequency->into())
+            ->starting($rrule->start)
+            ->interval($rrule->interval);
 
-        $startsAt = DateTimeImmutable::createFromFormat(
-            \DateTimeInterface::ATOM,
-            (string)$eventRrule["start"]
-        );
-        assert($startsAt instanceof DateTimeImmutable);
-
-        $recurrenceRule = RRule::frequency($frequency)
-            ->starting($startsAt)
-            ->interval($interval);
-
-        if (!is_null($eventRrule["count"])) {
-            $count = (int)$eventRrule["count"];
-            $recurrenceRule->times($count);
+        if (!is_null($rrule->count)) {
+            $recurrenceRule->times($rrule->count);
         }
 
-        if (!is_null($eventRrule["by_weekday"])) {
-            foreach ($eventRrule["by_weekday"] as $weekday) {
-                $weekday = RecurrenceDay::from($weekday)->into();
-                $recurrenceRule->onWeekDay($weekday);
-            }
+        if (!is_null($rrule->byWeekday)) {
+            $recurrenceRule->weekdays = array_map(
+                fn(Weekday $weekday) => $weekday->into(),
+                $rrule->byWeekday
+            );
         }
 
-        if (!is_null($eventRrule["by_month"])) {
-            foreach ($eventRrule["by_month"] as $month) {
-                $month = RecurrenceMonth::from($month);
-                $recurrenceRule->onMonth($month);
-            }
+        if (!is_null($rrule->byMonth)) {
+            $recurrenceRule->months = array_map(
+                fn(Month $month) => $month->into(),
+                $rrule->byMonth
+            );
         }
 
-        if (!is_null($eventRrule["by_month_day"])) {
-            $monthDay = (int)$eventRrule["by_month_day"];
-            $recurrenceRule->onMonthDay($monthDay);
+        if (!is_null($rrule->byMonthDay)) {
+            $recurrenceRule->onMonthDay($rrule->byMonthDay);
         }
 
         return $recurrenceRule;

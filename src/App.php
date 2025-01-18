@@ -2,16 +2,23 @@
 
 namespace Nanoyaki\DiscordEventsToIcs;
 
-use Nanoyaki\DiscordEventsToIcs\Entities\SpatieCalendar;
+use Eluceo\iCal\Presentation\Component;
+use Nanoyaki\DiscordEventsToIcs\Entities\CalendarInterface;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\GuildScheduledEvent;
 use Nanoyaki\DiscordEventsToIcs\Entities\EluceoCalendar;
-use Nanoyaki\DiscordEventsToIcs\Services\CachedDiscord;
-use Nanoyaki\DiscordEventsToIcs\Services\Discord;
+use Nanoyaki\DiscordEventsToIcs\Entities\SpatieCalendar;
+use Nanoyaki\DiscordEventsToIcs\Services\Discord\Client;
+use Nanoyaki\DiscordEventsToIcs\Services\Discord\Validator;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Cache\ItemInterface;
 
 readonly class App
 {
-    private Discord $discord;
+    private Client $discord;
+
+    private FilesystemAdapter $cache;
 
     public function __construct()
     {
@@ -19,12 +26,13 @@ readonly class App
             new Dotenv()->load(__DIR__ . '/../.env');
         }
 
-        if (array_key_exists('MONGODB_URI', $_SERVER)) {
-            $this->discord = new CachedDiscord($_SERVER["BOT_TOKEN"], $_SERVER["MONGODB_URI"]);
-            return;
-        }
+        $this->discord = new Client($_SERVER["BOT_TOKEN"]);
 
-        $this->discord = new Discord($_SERVER["BOT_TOKEN"]);
+        $this->cache = new FilesystemAdapter(
+            "discord",
+            180,
+            __DIR__ . "/../cache"
+        );
     }
 
     /**
@@ -32,17 +40,27 @@ readonly class App
      */
     public function getCalendar(): Response
     {
-        $discordEvents = $this->discord->getScheduledEventsByGuild($_SERVER["GUILD_ID"], true);
+        $calendar = $this->cache->get(
+            preg_replace("/[{}()\/\\\\@:]/", "", __NAMESPACE__ . __CLASS__ . __METHOD__),
+            function (ItemInterface $item): Component|string {
+                $item->expiresAfter(180);
 
-        $calendar =
-            array_all(
-                $discordEvents,
-                fn($event) => !array_key_exists("recurrence_rule", $event) || is_null($event["recurrence_rule"])
-            )
-                ? new EluceoCalendar($discordEvents)
-                : new SpatieCalendar($discordEvents);
+                $discordEvents = $this->discord->getScheduledEventsByGuild($_SERVER["GUILD_ID"], true);
 
-        return new Response($calendar->result(), Response::HTTP_OK, [
+                $hasRecurrenceRules = array_any(
+                    $discordEvents,
+                    fn(GuildScheduledEvent $event) => !is_null($event->recurrenceRule)
+                );
+
+                $calendar = $hasRecurrenceRules
+                    ? new SpatieCalendar($discordEvents)
+                    : new EluceoCalendar($discordEvents);
+
+                return $calendar->result();
+            }
+        );
+
+        return new Response($calendar, Response::HTTP_OK, [
             'Content-Type' => 'text/calendar; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="oh events.ics"'
         ]);

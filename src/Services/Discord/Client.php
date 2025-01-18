@@ -1,17 +1,21 @@
 <?php
 
-namespace Nanoyaki\DiscordEventsToIcs\Services;
+namespace Nanoyaki\DiscordEventsToIcs\Services\Discord;
 
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\ExternalEvent;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\GuildScheduledEvent;
+use Nanoyaki\DiscordEventsToIcs\Entities\Discord\VoiceChannelEvent;
+use Nanoyaki\DiscordEventsToIcs\Enums\Discord\EntityType;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class Discord
+readonly class Client
 {
     public const string DISCORD_API_BASE_URI = "https://discord.com/api/v10/";
     public const string DISCORD_EVENT_BASE_URI = "https://discord.com/events/";
 
-    private readonly HttpClientInterface $client;
+    private HttpClientInterface $client;
 
     public function __construct(
         string $botToken
@@ -30,7 +34,7 @@ class Discord
     /**
      * @param string $guildId
      * @param bool $withUserCount
-     * @return array<mixed>
+     * @return array<GuildScheduledEvent>
      * @throws \Throwable a bunch of symfony errors
      */
     public function getScheduledEventsByGuild(string $guildId, bool $withUserCount = false): array
@@ -43,10 +47,21 @@ class Discord
                     "with_user_count" => $withUserCount,
                 ],
             ],
+        )->toArray();
+
+        return array_map(
+            function ($apiEvent): GuildScheduledEvent {
+                Validator::assert(
+                    "Entity type",
+                    Validator::isInt("entity_type", $apiEvent)
+                );
+
+                return match (EntityType::from($apiEvent["entity_type"])) {
+                    EntityType::StageInstance, EntityType::Voice => new VoiceChannelEvent($apiEvent),
+                    EntityType::External => new ExternalEvent($apiEvent)
+                };
+            },
+            $response
         );
-
-        $result = $response->toArray();
-
-        return $result;
     }
 }

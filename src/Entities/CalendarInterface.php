@@ -1,6 +1,6 @@
 <?php
 
-namespace Nanoyaki\DiscordEventsToIcs\Entities\Discord;
+namespace Nanoyaki\DiscordEventsToIcs\Entities;
 
 interface CalendarInterface
 {
