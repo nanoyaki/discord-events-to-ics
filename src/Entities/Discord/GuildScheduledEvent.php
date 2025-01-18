@@ -87,7 +87,7 @@ readonly class GuildScheduledEvent
                 $apiEvent["scheduled_end_time"],
                 new \DateTimeZone("UTC")
             )
-            : $this->scheduledStartTime->modify("+1 day");
+            : $this->scheduledStartTime;
         assert($this->scheduledStartTime instanceof DateTimeImmutable);
         $this->status = EventStatus::from($apiEvent["status"]);
         $this->entityId = $apiEvent["entity_id"];
