@@ -3,12 +3,11 @@
 namespace Nanoyaki\DiscordEventsToIcs;
 
 use Eluceo\iCal\Presentation\Component;
-use Nanoyaki\DiscordEventsToIcs\Entities\CalendarInterface;
 use Nanoyaki\DiscordEventsToIcs\Entities\Discord\GuildScheduledEvent;
 use Nanoyaki\DiscordEventsToIcs\Entities\EluceoCalendar;
 use Nanoyaki\DiscordEventsToIcs\Entities\SpatieCalendar;
+use Nanoyaki\DiscordEventsToIcs\Services\Cache;
 use Nanoyaki\DiscordEventsToIcs\Services\Discord\Client;
-use Nanoyaki\DiscordEventsToIcs\Services\Discord\Validator;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,7 +40,7 @@ readonly class App
     public function getCalendar(): Response
     {
         $calendar = $this->cache->get(
-            preg_replace("/[{}()\/\\\\@:]/", "", __NAMESPACE__ . __CLASS__ . __METHOD__),
+            Cache::key(__NAMESPACE__ . __CLASS__ . __METHOD__),
             function (ItemInterface $item): Component|string {
                 $item->expiresAfter(180);
 
