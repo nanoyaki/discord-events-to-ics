@@ -18,7 +18,8 @@
   "extra": {
     "patches": {
       "eluceo/ical": [
-        "patches/eluceo-timezone.patch"
+        "patches/eluceo-timezone.patch",
+        "patches/eluceo-php-deprecations.patch"
       ],
       "spatie/icalendar-generator": [
         "patches/spatie-timezone.patch"
