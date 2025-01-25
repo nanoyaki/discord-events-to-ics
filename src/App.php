@@ -30,7 +30,7 @@ readonly class App
         $this->cache = new FilesystemAdapter(
             "discord",
             180,
-            __DIR__ . "/../cache"
+            $_SERVER["CACHE_DIR"] ?? __DIR__ . "/../cache"
         );
     }
 
