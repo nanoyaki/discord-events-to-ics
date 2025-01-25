@@ -1,12 +1,22 @@
 {
-    "_hash": "02ad9927d057a474f0e3927f39d6f04ac034224b9e818224ce3b8dccec54a33e",
+    "_hash": "a39f5416a06627834b49fe20eaa6acb59f02baa39c8487fdb58a02294948f35b",
     "patches": {
         "eluceo/ical": [
             {
                 "package": "eluceo/ical",
-                "description": "UTC offset fix",
+                "description": "Fix handling of +00:00 UTC offset output from DateTimeZone::getName()",
                 "url": "patches/eluceo-timezone.patch",
                 "sha256": "50bbdd94e1f10fd06f81424128fff034cb01ae0ac9405c7ec3749921e1afc412",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            },
+            {
+                "package": "eluceo/ical",
+                "description": "Fix nullable value deprecations",
+                "url": "patches/eluceo-php-deprecations.patch",
+                "sha256": "3d18df8fe496e6f6e3d66dfec9cd4fba5ec6e266f10e719007e5ca8e357314d3",
                 "depth": 1,
                 "extra": {
                     "provenance": "root"
@@ -16,7 +26,7 @@
         "spatie/icalendar-generator": [
             {
                 "package": "spatie/icalendar-generator",
-                "description": "UTC offset fix",
+                "description": "Fix handling of +00:00 UTC offset output from DateTimeZone::getName()",
                 "url": "patches/spatie-timezone.patch",
                 "sha256": "6e8783447c9798f647ee6948c27568d92d5f942acf49af52e7f1eeb6065b431a",
                 "depth": 1,
