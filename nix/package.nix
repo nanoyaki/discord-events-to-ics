@@ -11,5 +11,5 @@ php84.buildComposerProject2 {
 
   composerNoPlugins = false;
   composerLock = ../composer.lock;
-  vendorHash = "sha256-mc5cjk1MvCoYCULFB454iO/0okj/tIE5x5PtHWzQ5PI=";
+  vendorHash = "sha256-SOtTKx20r92wxxtr9l0l08I+zbPoLAHhva/PpP4q1NU=";
 }
