@@ -9,7 +9,7 @@
     "symfony/http-foundation": "^7.2",
     "eluceo/ical": "^2.14",
     "spatie/icalendar-generator": "^2.9",
-    "cweagans/composer-patches": "^1.7",
+    "cweagans/composer-patches": "dev-main",
     "symfony/cache": "^7.2"
   },
   "require-dev": {
@@ -18,11 +18,23 @@
   "extra": {
     "patches": {
       "eluceo/ical": [
-        "patches/eluceo-timezone.patch",
-        "patches/eluceo-php-deprecations.patch"
+        {
+          "description": "Fix handling of +00:00 UTC offset output from DateTimeZone::getName()",
+          "url": "patches/eluceo-timezone.patch",
+          "sha256": "50bbdd94e1f10fd06f81424128fff034cb01ae0ac9405c7ec3749921e1afc412"
+        },
+        {
+          "description": "Fix nullable value deprecations",
+          "url": "patches/eluceo-php-deprecations.patch",
+          "sha256": "3d18df8fe496e6f6e3d66dfec9cd4fba5ec6e266f10e719007e5ca8e357314d3"
+        }
       ],
       "spatie/icalendar-generator": [
-        "patches/spatie-timezone.patch"
+        {
+          "description": "Fix handling of +00:00 UTC offset output from DateTimeZone::getName()",
+          "url": "patches/spatie-timezone.patch",
+          "sha256": "6e8783447c9798f647ee6948c27568d92d5f942acf49af52e7f1eeb6065b431a"
+        }
       ]
     }
   },
