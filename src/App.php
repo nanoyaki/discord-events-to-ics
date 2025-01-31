@@ -2,7 +2,6 @@
 
 namespace Nanoyaki\DiscordEventsToIcs;
 
-use Eluceo\iCal\Presentation\Component;
 use Nanoyaki\DiscordEventsToIcs\Entities\Discord\GuildScheduledEvent;
 use Nanoyaki\DiscordEventsToIcs\Entities\EluceoCalendar;
 use Nanoyaki\DiscordEventsToIcs\Entities\SpatieCalendar;
@@ -41,7 +40,7 @@ readonly class App
     {
         $calendar = $this->cache->get(
             Cache::key(__NAMESPACE__ . __CLASS__ . __METHOD__),
-            function (ItemInterface $item): Component|string {
+            function (ItemInterface $item): string {
                 $item->expiresAfter(180);
 
                 $discordEvents = $this->discord->getScheduledEventsByGuild($_SERVER["GUILD_ID"], true);
@@ -55,7 +54,7 @@ readonly class App
                     ? new SpatieCalendar($discordEvents)
                     : new EluceoCalendar($discordEvents);
 
-                return $calendar->result();
+                return (string)$calendar->result();
             }
         );
 
