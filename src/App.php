@@ -2,11 +2,14 @@
 
 namespace Nanoyaki\DiscordEventsToIcs;
 
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Nanoyaki\DiscordEventsToIcs\Entities\Discord\GuildScheduledEvent;
 use Nanoyaki\DiscordEventsToIcs\Entities\EluceoCalendar;
 use Nanoyaki\DiscordEventsToIcs\Entities\SpatieCalendar;
 use Nanoyaki\DiscordEventsToIcs\Services\Cache;
 use Nanoyaki\DiscordEventsToIcs\Services\Discord\Client;
+use Psr\Log\LogLevel;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,9 +17,13 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 readonly class App
 {
+    public const string PACKAGE_NAME = "discord-events-to-ics";
+
     private Client $discord;
 
     private FilesystemAdapter $cache;
+
+    private Logger $logger;
 
     public function __construct()
     {
@@ -29,8 +36,46 @@ readonly class App
         $this->cache = new FilesystemAdapter(
             "discord",
             180,
-            $_SERVER["CACHE_DIR"] ?? __DIR__ . "/../cache"
+            $_SERVER["CACHE_DIR"] ?? __DIR__ . "/../var/cache"
         );
+
+        $logPath = ($_SERVER["LOG_PATH"] ?? __DIR__ . '/../var/log') . "{$this::PACKAGE_NAME}.log";
+        $logLevel = match ($_SERVER["LOG_LEVEL"]) {
+            "critical" => LogLevel::CRITICAL,
+            "warning" => LogLevel::WARNING,
+            "info" => LogLevel::INFO,
+            default => LogLevel::ERROR,
+        };
+
+        $this->logger = new Logger(self::PACKAGE_NAME);
+        $this->logger->pushHandler(new StreamHandler($logPath, $logLevel));
+    }
+
+    public function run(): Response
+    {
+        try {
+            $this->logger->info("Processing incoming request");
+
+            $calendar = $this->getCalendar();
+
+            $this->logger->info("Request processed, sending response");
+
+            return $calendar;
+        } catch (\Throwable $exception) {
+            $this->logger->critical($exception->getMessage(), [
+                "stackTrace" => $exception->getTraceAsString(),
+                "file" => $exception->getFile(),
+                "line" => $exception->getLine()
+            ]);
+
+            return new Response(
+                "An internal error occurred",
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                [
+                    "Content-Type" => "text/plain; charset=utf-8"
+                ]
+            );
+        }
     }
 
     /**

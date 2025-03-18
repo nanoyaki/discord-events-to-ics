@@ -10,7 +10,8 @@
     "eluceo/ical": "^2.14",
     "spatie/icalendar-generator": "^2.9",
     "cweagans/composer-patches": "dev-main",
-    "symfony/cache": "^7.2"
+    "symfony/cache": "^7.2",
+    "monolog/monolog": "^3.8"
   },
   "require-dev": {
     "phpstan/phpstan": "^2.1"
