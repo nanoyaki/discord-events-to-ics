@@ -39,7 +39,7 @@ readonly class App
             $_SERVER["CACHE_DIR"] ?? __DIR__ . "/../var/cache"
         );
 
-        $logPath = ($_SERVER["LOG_PATH"] ?? __DIR__ . '/../var/log') . "{$this::PACKAGE_NAME}.log";
+        $logPath = ($_SERVER["LOG_PATH"] ?? __DIR__ . '/../var/log') . "/{$this->PACKAGE_NAME}.log";
         $logLevel = match ($_SERVER["LOG_LEVEL"]) {
             "critical" => LogLevel::CRITICAL,
             "warning" => LogLevel::WARNING,
