@@ -39,7 +39,8 @@ readonly class App
             $_SERVER["CACHE_DIR"] ?? __DIR__ . "/../var/cache"
         );
 
-        $logPath = ($_SERVER["LOG_PATH"] ?? __DIR__ . '/../var/log') . "/{$this->PACKAGE_NAME}.log";
+        $packageName = self::PACKAGE_NAME;
+        $logPath = ($_SERVER["LOG_PATH"] ?? __DIR__ . '/../var/log') . "/$packageName.log";
         $logLevel = match ($_SERVER["LOG_LEVEL"]) {
             "critical" => LogLevel::CRITICAL,
             "warning" => LogLevel::WARNING,
@@ -47,7 +48,7 @@ readonly class App
             default => LogLevel::ERROR,
         };
 
-        $this->logger = new Logger(self::PACKAGE_NAME);
+        $this->logger = new Logger($packageName);
         $this->logger->pushHandler(new StreamHandler($logPath, $logLevel));
     }
 

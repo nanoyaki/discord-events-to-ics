@@ -44,14 +44,22 @@ class EluceoCalendar implements CalendarInterface
             $discordEvents
         );
 
-        $firstTimeSpan = $icalEvents[0]->getOccurrence();
-        assert($firstTimeSpan instanceof TimeSpan);
-        $firstDate = $firstTimeSpan->getBegin()->getDateTime();
+        $firstDate = new PhpDateTimeImmutable(
+            "now",
+            new \DateTimeZone("Europe/Berlin")
+        );
+        $lastDate = $firstDate;
 
-        $lastElement = count($icalEvents) - 1;
-        $lastTimeSpan = $icalEvents[$lastElement]->getOccurrence();
-        assert($lastTimeSpan instanceof TimeSpan);
-        $lastDate = $lastTimeSpan->getEnd()->getDateTime();
+        if (count($icalEvents) > 0) {
+            $firstTimeSpan = $icalEvents[0]->getOccurrence();
+            assert($firstTimeSpan instanceof TimeSpan);
+            $firstDate = $firstTimeSpan->getBegin()->getDateTime();
+
+            $lastElement = count($icalEvents) - 1;
+            $lastTimeSpan = $icalEvents[$lastElement]->getOccurrence();
+            assert($lastTimeSpan instanceof TimeSpan);
+            $lastDate = $lastTimeSpan->getEnd()->getDateTime();
+        }
 
         $timezone = TimeZone::createFromPhpDateTimeZone(
             new \DateTimeZone("UTC"),
