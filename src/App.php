@@ -88,6 +88,7 @@ readonly class App
             Cache::key(__NAMESPACE__ . __CLASS__ . __METHOD__),
             function (ItemInterface $item): string {
                 $item->expiresAfter(180);
+                $this->logger->info("Cache miss: building new calendar");
 
                 $discordEvents = $this->discord->getScheduledEventsByGuild($_SERVER["GUILD_ID"], true);
 
