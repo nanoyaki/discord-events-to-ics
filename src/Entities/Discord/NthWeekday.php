@@ -11,6 +11,9 @@ readonly class NthWeekday
 
     public Weekday $weekday;
 
+    /**
+     * @param array<mixed> $apiNthWeekday
+     */
     public function __construct(array $apiNthWeekday)
     {
         Validator::assert(

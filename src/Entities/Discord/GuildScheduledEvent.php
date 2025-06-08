@@ -75,20 +75,22 @@ readonly class GuildScheduledEvent
         $this->creatorId = $apiEvent["creator_id"];
         $this->name = $apiEvent["name"];
         $this->description = Validator::exists("description", $apiEvent) ? $apiEvent["description"] : null;
-        $this->scheduledStartTime = DateTimeImmutable::createFromFormat(
+        $scheduledStartTime = DateTimeImmutable::createFromFormat(
             \DateTimeInterface::ATOM,
             $apiEvent["scheduled_start_time"],
             new \DateTimeZone("UTC")
         );
-        assert($this->scheduledStartTime instanceof DateTimeImmutable);
-        $this->scheduledEndTime = !is_null($apiEvent["scheduled_end_time"])
+        assert($scheduledStartTime instanceof DateTimeImmutable);
+        $this->scheduledStartTime = $scheduledStartTime;
+        $scheduledEndTime = !is_null($apiEvent["scheduled_end_time"])
             ? DateTimeImmutable::createFromFormat(
                 \DateTimeInterface::ATOM,
                 $apiEvent["scheduled_end_time"],
                 new \DateTimeZone("UTC")
             )
             : $this->scheduledStartTime;
-        assert($this->scheduledStartTime instanceof DateTimeImmutable);
+        assert($scheduledEndTime instanceof DateTimeImmutable);
+        $this->scheduledEndTime = $scheduledEndTime;
         $this->status = EventStatus::from($apiEvent["status"]);
         $this->entityId = $apiEvent["entity_id"];
         $this->creator = new User($apiEvent["creator"]);

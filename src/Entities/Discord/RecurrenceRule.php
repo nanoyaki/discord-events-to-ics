@@ -45,6 +45,9 @@ readonly class RecurrenceRule
 
     public ?int $count;
 
+    /**
+     * @param array<mixed> $apiRecurrenceRule
+     */
     public function __construct(array $apiRecurrenceRule)
     {
         Validator::assert(
@@ -61,21 +64,25 @@ readonly class RecurrenceRule
             Validator::isNullableInt("count", $apiRecurrenceRule),
         );
 
-        $this->start = DateTimeImmutable::createFromFormat(
+        $start = DateTimeImmutable::createFromFormat(
             \DateTimeInterface::ATOM,
             $apiRecurrenceRule["start"],
             new \DateTimeZone("UTC")
         );
-        $this->end = !is_null($apiRecurrenceRule["end"])
+        assert($start instanceof DateTimeImmutable);
+        $this->start = $start;
+        $end = !is_null($apiRecurrenceRule["end"])
             ? DateTimeImmutable::createFromFormat(
                 \DateTimeInterface::ATOM,
                 $apiRecurrenceRule["end"],
                 new \DateTimeZone("UTC")
             )
             : null;
+        assert($end instanceof DateTimeImmutable || is_null($end));
+        $this->end = $end;
         $this->frequency = !is_null($apiRecurrenceRule["frequency"])
             ? Frequency::from($apiRecurrenceRule["frequency"])
-            : null;
+            : Frequency::from(0);
         $this->interval = $apiRecurrenceRule["interval"];
         $this->byWeekday = !is_null($apiRecurrenceRule["by_weekday"])
             ? array_map(
