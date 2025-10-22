@@ -23,11 +23,6 @@
           "description": "Fix handling of +00:00 UTC offset output from DateTimeZone::getName()",
           "url": "patches/eluceo-timezone.patch",
           "sha256": "50bbdd94e1f10fd06f81424128fff034cb01ae0ac9405c7ec3749921e1afc412"
-        },
-        {
-          "description": "Fix nullable value deprecations",
-          "url": "patches/eluceo-php-deprecations.patch",
-          "sha256": "3d18df8fe496e6f6e3d66dfec9cd4fba5ec6e266f10e719007e5ca8e357314d3"
         }
       ],
       "spatie/icalendar-generator": [

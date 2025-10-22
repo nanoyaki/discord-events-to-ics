@@ -11,16 +11,6 @@
                 "extra": {
                     "provenance": "root"
                 }
-            },
-            {
-                "package": "eluceo/ical",
-                "description": "Fix nullable value deprecations",
-                "url": "patches/eluceo-php-deprecations.patch",
-                "sha256": "3d18df8fe496e6f6e3d66dfec9cd4fba5ec6e266f10e719007e5ca8e357314d3",
-                "depth": 1,
-                "extra": {
-                    "provenance": "root"
-                }
             }
         ],
         "spatie/icalendar-generator": [

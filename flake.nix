@@ -18,6 +18,21 @@
         ];
       };
 
-      packages.x86_64-linux.default = pkgs.callPackage ./nix/package.nix { };
+      packages.x86_64-linux.default = pkgs.callPackage (
+        {
+          php84,
+        }:
+
+        php84.buildComposerProject2 {
+          pname = "discord-events-to-ics";
+          version = "1.1.2";
+
+          src = ./.;
+
+          composerNoPlugins = false;
+          composerLock = ./composer.lock;
+          vendorHash = "sha256-gc/8lTgaMdsBqjyx9bHUDTILufgKa4jyWR6HuhULOX8=";
+        }
+      ) { };
     };
 }
