@@ -3,36 +3,43 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default-linux";
   };
 
   outputs =
-    { nixpkgs, ... }:
-    let
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
-    in
-    {
-      devShells.x86_64-linux.default = pkgs.mkShell {
-        buildInputs = with pkgs; [
-          php84
-          php84.packages.composer
-        ];
-      };
+    inputs:
 
-      packages.x86_64-linux.default = pkgs.callPackage (
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      perSystem =
+        { pkgs, ... }:
+
         {
-          php84,
-        }:
+          devShells.default = pkgs.mkShell {
+            buildInputs = with pkgs; [
+              php84
+              php84.packages.composer
+            ];
+          };
 
-        php84.buildComposerProject2 {
-          pname = "discord-events-to-ics";
-          version = "1.1.2";
+          packages.default = pkgs.callPackage (
+            {
+              php84,
+            }:
 
-          src = ./.;
+            php84.buildComposerProject2 {
+              pname = "discord-events-to-ics";
+              version = "1.1.2";
 
-          composerNoPlugins = false;
-          composerLock = ./composer.lock;
-          vendorHash = "sha256-gc/8lTgaMdsBqjyx9bHUDTILufgKa4jyWR6HuhULOX8=";
-        }
-      ) { };
+              src = ./.;
+
+              composerNoPlugins = false;
+              composerLock = ./composer.lock;
+              vendorHash = "sha256-gc/8lTgaMdsBqjyx9bHUDTILufgKa4jyWR6HuhULOX8=";
+            }
+          ) { };
+        };
+
+      systems = import inputs.systems;
     };
 }
